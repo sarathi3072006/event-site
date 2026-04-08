@@ -3,7 +3,7 @@
    All data is stored in SQLite via Flask API
 ══════════════════════════════════════════════════ */
 
-const API = '';  // same origin; change to 'http://localhost:5000' if needed
+const API = 'https://promycelial-noninferentially-andra.ngrok-free.dev/api/events';  // same origin; change to 'http://localhost:5000' if needed
 
 let db = {
     events: [], registrations: [], notices: [], schedules: [],
