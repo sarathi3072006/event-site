@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Event Management System</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+
+<button class="admin-login-btn" onclick="openAdminModal()" id="adminBtn">🔐 Admin Login</button>
+
+<div id="adminModal" class="admin-modal">
+    <div class="admin-modal-content">
+        <button class="close-modal" onclick="closeAdminModal()">×</button>
+        <h2 style="text-align:center;color:#8b6f47;margin-bottom:20px;">Admin Login</h2>
+        <form id="loginForm" onsubmit="handleLogin(event)">
+            <input id="username" placeholder="Username" required>
+            <input id="password" type="password" placeholder="Password" required>
+            <button type="submit" style="width:100%;margin-top:10px;">Login</button>
+            <div class="error" id="loginError" style="display:none;"></div>
+            <p style="text-align:center;color:#999;margin-top:15px;font-size:12px;">Default: admin / admin123</p>
+        </form>
+    </div>
+</div>
+
+<!-- BROCHURE VIEWER MODAL -->
+<div id="brochureViewerModal" class="brochure-viewer-modal">
+    <div class="brochure-viewer-content">
+        <div class="brochure-viewer-header">
+            <h3 id="brochureViewerTitle">Brochure</h3>
+            <button class="close-viewer" onclick="closeBrochureViewer()">×</button>
+        </div>
+        <div class="brochure-viewer-body" id="brochureViewerBody"></div>
+        <div class="brochure-download-bar">
+            <span style="color:#8b6f47;font-size:14px;flex:1;">📄 View the brochure above</span>
+            <a id="brochureDownloadLink" href="#" download style="background:#8b6f47;color:white;padding:10px 20px;border-radius:8px;text-decoration:none;font-size:14px;font-weight:600;">⬇ Download</a>
+        </div>
+    </div>
+</div>
+
+<!-- MOMENT VIEWER MODAL -->
+<div id="momentViewerModal" class="moment-viewer-modal">
+    <div class="moment-viewer-content">
+        <div class="moment-viewer-header">
+            <h3 id="momentViewerTitle">Event Moment</h3>
+            <button class="close-moment-viewer" onclick="closeMomentViewer()">×</button>
+        </div>
+        <div class="moment-viewer-body" id="momentViewerBody"></div>
+        <div class="moment-viewer-footer">
+            <span style="color:#8b6f47;font-size:14px;flex:1;" id="momentViewerDesc"></span>
+            <a id="momentDownloadLink" href="#" download style="background:#8b6f47;color:white;padding:10px 20px;border-radius:8px;text-decoration:none;font-size:14px;font-weight:600;">⬇ Download</a>
+        </div>
+    </div>
+</div>
+
+<!-- CERTIFICATE PREVIEW MODAL -->
+<div id="certPreviewModal" class="cert-preview-modal">
+    <div class="cert-preview-content">
+        <div class="cert-preview-header">
+            <h3 id="certPreviewTitle">🏆 Certificate Preview</h3>
+            <button class="close-cert-preview" onclick="closeCertPreview()">×</button>
+        </div>
+        <div class="cert-preview-body" id="certPreviewBody"></div>
+        <div class="cert-preview-footer">
+            <span style="color:#8b6f47;font-size:14px;flex:1;">🖨️ Use Print to save as PDF</span>
+            <button onclick="printCertificate()" class="btn-print">🖨️ Print / Save PDF</button>
+            <button onclick="closeCertPreview()" style="background:#999;">Close</button>
+        </div>
+    </div>
+</div>
+
+<!-- LANDING PAGE -->
+<div id="landingPage" class="page active landing-page">
+    <div class="hero-section">
+        <h1 class="hero-title">Event Management System</h1>
+        <p class="hero-subtitle">Discover amazing events, register seamlessly, and be part of unforgettable experiences</p>
+        <div class="guest-cta-card">
+            <h2>Welcome, Guest!</h2>
+            <p>Explore our upcoming events, view schedules, register for events, share your feedback, and download your certificates. Everything you need is just a click away!</p>
+            <button class="guest-enter-btn" onclick="enterAsGuest()">Enter Event Portal</button>
+        </div>
+    </div>
+    <div class="features-section">
+        <div class="features-container">
+            <h2 class="features-title">What You Can Do</h2>
+            <div class="features-grid">
+                <div class="feature-card"><h3>Browse Events</h3><p>Explore all upcoming events with detailed information about dates, venues, and participant requirements.</p></div>
+                <div class="feature-card"><h3>View Schedules</h3><p>Check out the complete event schedule with timings, speakers, and session details.</p></div>
+                <div class="feature-card"><h3>Easy Registration</h3><p>Register solo or as a team. For groups, shared contact details are filled once for the whole team.</p></div>
+                <div class="feature-card"><h3>Multiple Payment Options</h3><p>Pay conveniently using QR code, UPI, or bank transfer.</p></div>
+                <div class="feature-card"><h3>🏆 Download Certificates</h3><p>Winners and participants can view and download their certificates once results are published.</p></div>
+                <div class="feature-card"><h3>Stay Updated</h3><p>Get important notices and announcements about events and changes.</p></div>
+            </div>
+        </div>
+    </div>
+    <footer>Event Management System © 2025</footer>
+</div>
+
+<!-- MAIN APP -->
+<div id="appPage" class="page">
+    <header>Event Management System</header>
+    <div class="nav" id="mainNav"></div>
+    <div class="container">
+
+        <!-- ADMIN: EVENTS -->
+        <div id="adminEvents" class="page">
+            <div class="card">
+                <h2>Create Event</h2>
+                <form id="eventForm" onsubmit="handleEventSubmit(event)">
+                    <input id="eventName" placeholder="Event Name" required>
+                    <input id="eventDate" type="datetime-local" required>
+                    <input id="eventVenue" placeholder="Venue" required>
+                    <textarea id="eventDesc" placeholder="Event Description" rows="4"></textarea>
+                    <label style="display:block;margin-top:14px;color:#8b6f47;font-weight:600;">Number of Participants Required per Registration</label>
+                    <p style="color:#999;font-size:13px;margin:4px 0 6px;">Set to 1 for individual, 2+ for team events.</p>
+                    <input id="eventParticipants" type="number" min="1" max="10" value="1" required style="max-width:280px;">
+                    <button type="submit" id="eventSubmitBtn">Create Event</button>
+                    <button type="button" onclick="cancelEdit()" style="display:none;" id="cancelBtn">Cancel</button>
+                </form>
+            </div>
+            <div class="card"><h2>All Events</h2><div id="adminEventsList"></div></div>
+        </div>
+
+        <!-- ADMIN: SCHEDULES -->
+        <div id="adminSchedules" class="page">
+            <div class="card">
+                <h2>Create Schedule</h2>
+                <form id="scheduleForm" onsubmit="handleScheduleSubmit(event)">
+                    <select id="scheduleEventSelect" required><option value="">Select Event</option></select>
+                    <input id="scheduleTime" type="time" required>
+                    <input id="scheduleActivity" placeholder="Activity/Session Title" required>
+                    <input id="scheduleSpeaker" placeholder="Speaker/Presenter" required>
+                    <input id="scheduleVenue" placeholder="Venue/Room">
+                    <button type="submit" id="scheduleSubmitBtn">Add Schedule Item</button>
+                    <button type="button" onclick="cancelScheduleEdit()" style="display:none;" id="cancelScheduleBtn">Cancel</button>
+                </form>
+            </div>
+            <div class="card"><h2>All Schedules</h2><div id="adminSchedulesList"></div></div>
+        </div>
+
+        <!-- ADMIN: REGISTRATIONS -->
+        <div id="adminRegistrations" class="page">
+            <div class="card"><h2>Event Registrations</h2><div id="registrationList"></div></div>
+        </div>
+
+        <!-- ADMIN: ATTENDANCE -->
+        <div id="adminAttendance" class="page">
+            <div class="card">
+                <h2>Attendance Sheets</h2>
+                <p style="color:#666;margin-bottom:20px;">Generate and print attendance sheets for registered participants by event.</p>
+                <div class="attendance-selector">
+                    <label style="display:block;margin-bottom:10px;color:#8b6f47;font-weight:500;">Select Event</label>
+                    <select id="attendanceEventSelect" onchange="generateAttendanceSheet()" style="max-width:400px;"><option value="">Choose an event...</option></select>
+                </div>
+                <div id="attendanceSheetContainer"></div>
+            </div>
+        </div>
+
+        <!-- ADMIN: FEEDBACKS -->
+        <div id="adminFeedbacks" class="page">
+            <div class="card"><h2>Feedback Submissions</h2><div id="feedbackList"></div></div>
+        </div>
+
+        <!-- ADMIN: NOTICES -->
+        <div id="adminNotices" class="page">
+            <div class="card">
+                <h2>Create Notice</h2>
+                <form id="noticeForm" onsubmit="handleNoticeSubmit(event)">
+                    <input id="noticeTitle" placeholder="Notice Title" required>
+                    <textarea id="noticeDesc" placeholder="Notice Description" rows="4" required></textarea>
+                    <button type="submit">Add Notice</button>
+                </form>
+            </div>
+            <div class="card"><h2>All Notices</h2><div id="adminNoticesList"></div></div>
+        </div>
+
+        <!-- ADMIN: BROCHURES -->
+        <div id="adminBrochures" class="page">
+            <div class="card">
+                <h2>📋 Upload Brochure</h2>
+                <form id="brochureForm" onsubmit="handleBrochureSubmit(event)">
+                    <label style="display:block;margin-top:8px;color:#8b6f47;font-weight:600;">Brochure Title *</label>
+                    <input id="brochureTitle" placeholder="e.g. Tech Conference 2025 — Official Brochure" required>
+                    <label style="display:block;margin-top:12px;color:#8b6f47;font-weight:600;">Short Description</label>
+                    <textarea id="brochureDesc" placeholder="Brief description..." rows="3"></textarea>
+                    <label style="display:block;margin-top:12px;color:#8b6f47;font-weight:600;">Link to Event (Optional)</label>
+                    <select id="brochureEventLink"><option value="">— Not linked to a specific event —</option></select>
+                    <label style="display:block;margin-top:16px;color:#8b6f47;font-weight:600;">Upload Brochure File *</label>
+                    <label class="brochure-upload-zone" for="brochureFileInput" id="brochureUploadZone">
+                        <div class="upload-icon">📂</div><p>Click to choose a file</p><small>Image or PDF</small>
+                    </label>
+                    <input type="file" id="brochureFileInput" accept="image/*,application/pdf" style="display:none;" onchange="onBrochureFileChosen(event)">
+                    <div id="brochureFilePreview" style="margin:10px 0;"></div>
+                    <button type="submit" id="brochureSubmitBtn">📤 Upload Brochure</button>
+                    <button type="button" onclick="cancelBrochureEdit()" style="display:none;" id="cancelBrochureBtn">Cancel</button>
+                    <div class="success" id="brochureSuccess" style="display:none;margin-top:10px;"></div>
+                </form>
+            </div>
+            <div class="card"><h2>All Brochures</h2><div id="adminBrochuresList"></div></div>
+        </div>
+
+        <!-- ADMIN: MOMENTS -->
+        <div id="adminMoments" class="page">
+            <div class="card">
+                <h2>🎞️ Upload Event Moment</h2>
+                <form id="momentForm" onsubmit="handleMomentSubmit(event)">
+                    <label style="display:block;margin-top:8px;color:#8b6f47;font-weight:600;">Moment Title *</label>
+                    <input id="momentTitle" placeholder="e.g. Cultural Fest – Stage Performance" required>
+                    <label style="display:block;margin-top:12px;color:#8b6f47;font-weight:600;">Type *</label>
+                    <select id="momentType" required onchange="onMomentTypeChange()">
+                        <option value="">Select Type</option>
+                        <option value="photo">📷 Photo</option>
+                        <option value="video">🎬 Video</option>
+                        <option value="makeover">✨ Makeover Video</option>
+                    </select>
+                    <label style="display:block;margin-top:12px;color:#8b6f47;font-weight:600;">Caption / Description</label>
+                    <textarea id="momentDesc" placeholder="Short caption or description..." rows="3"></textarea>
+                    <label style="display:block;margin-top:12px;color:#8b6f47;font-weight:600;">Link to Event (Optional)</label>
+                    <select id="momentEventLink"><option value="">— Not linked to a specific event —</option></select>
+                    <label style="display:block;margin-top:16px;color:#8b6f47;font-weight:600;" id="momentFileLabel">Upload File *</label>
+                    <p style="color:#999;font-size:13px;margin:4px 0 8px;" id="momentFileHint">Select type first</p>
+                    <label class="moment-upload-zone" for="momentFileInput" id="momentUploadZone">
+                        <div class="upload-icon">📁</div><p>Click to choose a file</p><small>Photo or Video</small>
+                    </label>
+                    <input type="file" id="momentFileInput" accept="image/*,video/*" style="display:none;" onchange="onMomentFileChosen(event)">
+                    <div id="momentFilePreview" style="margin:10px 0;"></div>
+                    <button type="submit" id="momentSubmitBtn">📤 Upload Moment</button>
+                    <button type="button" onclick="cancelMomentEdit()" style="display:none;" id="cancelMomentBtn">Cancel</button>
+                    <div class="success" id="momentSuccess" style="display:none;margin-top:10px;"></div>
+                </form>
+            </div>
+            <div class="card">
+                <h2>All Moments</h2>
+                <div class="moments-type-tabs">
+                    <button class="moments-type-tab active" onclick="filterAdminMoments('all',this)">All</button>
+                    <button class="moments-type-tab" onclick="filterAdminMoments('photo',this)">📷 Photos</button>
+                    <button class="moments-type-tab" onclick="filterAdminMoments('video',this)">🎬 Videos</button>
+                    <button class="moments-type-tab" onclick="filterAdminMoments('makeover',this)">✨ Makeover</button>
+                </div>
+                <div id="adminMomentsList"></div>
+            </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════
+             ADMIN: CERTIFICATE GENERATOR
+        ═══════════════════════════════════════ -->
+        <div id="adminCertificates" class="page">
+            <div class="card">
+                <h2>🏆 Publish Certificate / Results</h2>
+                <p style="color:#666;margin-bottom:20px;">Create certificates for winners and participants. Once published, guests can view and download their certificates.</p>
+                <form id="certForm" onsubmit="handleCertSubmit(event)">
+                    <label style="display:block;margin-top:8px;color:#8b6f47;font-weight:600;">Event *</label>
+                    <select id="certEventSelect" required onchange="onCertEventChange()">
+                        <option value="">Select Event</option>
+                    </select>
+
+                    <label style="display:block;margin-top:12px;color:#8b6f47;font-weight:600;">Certificate Type *</label>
+                    <select id="certType" required>
+                        <option value="">Select Type</option>
+                        <option value="winner">🥇 Winner (1st Place)</option>
+                        <option value="runner">🥈 Runner-up (2nd Place)</option>
+                        <option value="second_runner">🥉 Second Runner-up (3rd Place)</option>
+                        <option value="participant">📜 Participation Certificate</option>
+                        <option value="special">⭐ Special Achievement</option>
+                    </select>
+
+                    <label style="display:block;margin-top:12px;color:#8b6f47;font-weight:600;">Achievement Title (shown on certificate)</label>
+                    <input id="certAchievement" placeholder="e.g. Best Project Award, First Place in Coding Contest">
+
+                    <label style="display:block;margin-top:12px;color:#8b6f47;font-weight:600;">Issued By / Organization Name</label>
+                    <input id="certOrgName" placeholder="e.g. Tech Club, Dept. of Computer Science">
+
+                    <label style="display:block;margin-top:12px;color:#8b6f47;font-weight:600;">Signatory 1 Name & Title</label>
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+                        <input id="certSig1Name" placeholder="Name (e.g. Dr. A. Kumar)">
+                        <input id="certSig1Title" placeholder="Title (e.g. Event Coordinator)">
+                    </div>
+
+                    <label style="display:block;margin-top:12px;color:#8b6f47;font-weight:600;">Signatory 2 Name & Title (Optional)</label>
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+                        <input id="certSig2Name" placeholder="Name (e.g. Prof. B. Singh)">
+                        <input id="certSig2Title" placeholder="Title (e.g. HOD / Principal)">
+                    </div>
+
+                    <label style="display:block;margin-top:16px;color:#8b6f47;font-weight:600;">
+                        Certificate Recipients
+                        <span style="font-size:12px;color:#999;font-weight:400;margin-left:8px;">— For participant certs, leave name blank to auto-generate from registrations</span>
+                    </label>
+                    <div id="certWinnersContainer">
+                        <div class="winner-entry-row">
+                            <input class="cert-winner-name" placeholder="Recipient Name *" required>
+                            <input class="cert-winner-roll" placeholder="Roll No. (Optional)">
+                            <button type="button" class="remove-winner-btn" onclick="removeWinnerRow(this)">✕</button>
+                        </div>
+                    </div>
+                    <button type="button" class="add-winner-btn" onclick="addWinnerRow()">+ Add Another Recipient</button>
+
+                    <div style="margin-top:16px;background:#fff4e6;border:2px solid #d4a574;border-radius:10px;padding:14px;">
+                        <label style="display:flex;align-items:center;gap:10px;cursor:pointer;">
+                            <input type="checkbox" id="certAutoParticipants" style="width:auto;margin:0;" onchange="toggleAutoParticipants()">
+                            <span style="color:#8b6f47;font-weight:600;font-size:14px;">📋 Auto-generate certificates for ALL registered participants of this event</span>
+                        </label>
+                        <p style="color:#999;font-size:12px;margin-top:6px;margin-left:28px;">When checked, one certificate is issued per registered participant automatically.</p>
+                    </div>
+
+                    <button type="submit" id="certSubmitBtn" style="margin-top:16px;">🏆 Publish Certificates</button>
+                    <button type="button" onclick="cancelCertEdit()" style="display:none;" id="cancelCertBtn">Cancel</button>
+                    <div class="success" id="certSuccess" style="display:none;margin-top:10px;"></div>
+                </form>
+            </div>
+
+            <div class="card">
+                <h2>Published Certificates</h2>
+                <div class="cert-filter-bar">
+                    <button class="cert-filter-btn active" onclick="filterAdminCerts('all',this)">All</button>
+                    <button class="cert-filter-btn" onclick="filterAdminCerts('winner',this)">🥇 Winners</button>
+                    <button class="cert-filter-btn" onclick="filterAdminCerts('runner',this)">🥈 Runner-up</button>
+                    <button class="cert-filter-btn" onclick="filterAdminCerts('participant',this)">📜 Participants</button>
+                    <button class="cert-filter-btn" onclick="filterAdminCerts('special',this)">⭐ Special</button>
+                </div>
+                <div id="adminCertsList"></div>
+            </div>
+        </div>
+
+        <!-- ADMIN: PAYMENT SETTINGS -->
+        <div id="adminPaymentSettings" class="page">
+            <div class="card">
+                <h2>Payment Settings</h2>
+                <form id="paymentSettingsForm" onsubmit="handlePaymentSettings(event)">
+                    <h3 style="color:#8b6f47;margin:20px 0 10px;">QR Code Payment</h3>
+                    <div class="file-upload-wrapper">
+                        <input type="file" id="qrCodeUpload" accept="image/*" onchange="previewQRCode(event)">
+                        <label for="qrCodeUpload" class="file-upload-label">Click to Upload QR Code Image</label>
+                    </div>
+                    <div id="qrPreview" style="text-align:center;margin:15px 0;"></div>
+                    <h3 style="color:#8b6f47;margin:20px 0 10px;">UPI Details</h3>
+                    <input id="upiId" placeholder="UPI ID"><input id="upiName" placeholder="UPI Account Holder Name">
+                    <h3 style="color:#8b6f47;margin:20px 0 10px;">Bank Account Details</h3>
+                    <input id="bankName" placeholder="Bank Name"><input id="accountNumber" placeholder="Account Number">
+                    <input id="ifscCode" placeholder="IFSC Code"><input id="accountHolder" placeholder="Account Holder Name">
+                    <button type="submit" style="margin-top:20px;">Save Payment Settings</button>
+                </form>
+                <div id="paymentSaveSuccess" class="success" style="display:none;margin-top:15px;">Payment settings saved!</div>
+            </div>
+            <div class="card"><h2>Current Payment Settings Preview</h2><div class="payment-methods-grid" id="adminPaymentPreview"></div></div>
+        </div>
+
+        <!-- GUEST: BROCHURES -->
+        <div id="brochures" class="page">
+            <div class="card">
+                <h2>📋 Event Brochures</h2>
+                <div id="guestBrochuresList"></div>
+            </div>
+        </div>
+
+        <!-- GUEST: MOMENTS -->
+        <div id="moments" class="page">
+            <div class="card">
+                <h2>🎞️ Event Moments</h2>
+                <div class="moments-filter-bar">
+                    <button class="moments-filter-btn active" onclick="filterGuestMoments('all',this)">✨ All</button>
+                    <button class="moments-filter-btn" onclick="filterGuestMoments('photo',this)">📷 Photos</button>
+                    <button class="moments-filter-btn" onclick="filterGuestMoments('video',this)">🎬 Videos</button>
+                    <button class="moments-filter-btn" onclick="filterGuestMoments('makeover',this)">🌟 Makeover</button>
+                </div>
+                <div id="guestMomentsList"></div>
+            </div>
+        </div>
+
+        <!-- GUEST: EVENTS -->
+        <div id="events" class="page">
+            <div class="card"><h2>Upcoming Events</h2><div id="userEvents"></div></div>
+        </div>
+
+        <!-- GUEST: SCHEDULE -->
+        <div id="schedule" class="page">
+            <div class="card"><h2>Event Schedules</h2><div id="userSchedules"></div></div>
+        </div>
+
+        <!-- GUEST: REGISTER -->
+        <div id="register" class="page">
+            <div class="card">
+                <h2>Register for Event</h2>
+                <form id="registerForm" onsubmit="handleRegistration(event)">
+                    <label style="display:block;margin-top:8px;color:#8b6f47;font-weight:600;">Select Event</label>
+                    <select id="eventSelect" required onchange="onEventSelectChange()"><option value="">Select Event</option></select>
+                    <div class="event-info-notice" id="eventInfoNotice"></div>
+                    <div id="registrationFormBody"></div>
+                    <button type="submit" id="regSubmitBtn" style="display:none;margin-top:12px;width:100%;">Submit Registration</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- GUEST: PAYMENT -->
+        <div id="payment" class="page">
+            <div class="card">
+                <h2>Payment Information</h2>
+                <div class="payment-instruction-box">
+                    <h3>Payment Instructions</h3>
+                    <p>After registering for an event, complete your payment using any of the methods below.</p>
+                </div>
+                <div class="payment-methods-grid" id="paymentMethodsDisplay"></div>
+            </div>
+        </div>
+
+        <!-- GUEST: CERTIFICATES -->
+        <div id="certificates" class="page">
+            <div class="card">
+                <h2>🏆 My Certificates</h2>
+                <p style="color:#666;margin-bottom:16px;">Certificates published by the organizers appear here. Find your certificate and download it as a PDF.</p>
+                <div class="cert-filter-bar">
+                    <button class="cert-filter-btn active" onclick="filterGuestCerts('all',this)">All</button>
+                    <button class="cert-filter-btn" onclick="filterGuestCerts('winner',this)">🥇 Winners</button>
+                    <button class="cert-filter-btn" onclick="filterGuestCerts('runner',this)">🥈 Runner-up</button>
+                    <button class="cert-filter-btn" onclick="filterGuestCerts('participant',this)">📜 Participants</button>
+                    <button class="cert-filter-btn" onclick="filterGuestCerts('special',this)">⭐ Special</button>
+                </div>
+                <div id="guestCertsList"></div>
+            </div>
+        </div>
+
+        <!-- GUEST: FEEDBACK -->
+        <div id="feedback" class="page">
+            <div class="card">
+                <h2>Share Your Feedback</h2>
+                <form id="feedbackForm" onsubmit="handleFeedbackSubmit(event)">
+                    <input id="feedbackName" placeholder="Your Name" required>
+                    <input id="feedbackEmail" type="email" placeholder="Email Address" required>
+                    <select id="feedbackEventSelect" required>
+                        <option value="">Select Event (Optional)</option>
+                        <option value="General">General Feedback</option>
+                    </select>
+                    <label style="display:block;margin-top:15px;color:#8b6f47;font-weight:500;">Rate Your Experience</label>
+                    <div class="rating-container" id="ratingStars">
+                        <span class="star" data-rating="1">★</span><span class="star" data-rating="2">★</span>
+                        <span class="star" data-rating="3">★</span><span class="star" data-rating="4">★</span>
+                        <span class="star" data-rating="5">★</span>
+                    </div>
+                    <input type="hidden" id="feedbackRating" required>
+                    <textarea id="feedbackComments" placeholder="Your Comments and Suggestions" rows="5" required></textarea>
+                    <button type="submit">Submit Feedback</button>
+                    <div class="success" id="feedbackSuccess" style="display:none;"></div>
+                </form>
+            </div>
+        </div>
+
+        <!-- GUEST: NOTICES -->
+        <div id="notices" class="page">
+            <div class="card"><h2>Important Notices</h2><div id="noticeList"></div></div>
+        </div>
+
+    </div>
+    <footer>Event Management System © 2025</footer>
+</div>
+
+<script src="/static/script.js"></script>
+</body>
+</html>
