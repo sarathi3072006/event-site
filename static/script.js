@@ -43,14 +43,6 @@ async function loadPublic() {
     db.certificates = await apiFetch('/api/certificates').catch(() => []);
     db.paymentSettings = await apiFetch('/api/payment-settings').catch(() => ({}));
 }
-    db.events = events || [];
-    db.schedules = schedules || [];
-    db.notices = notices || [];
-    db.brochures = brochures || [];
-    db.moments = moments || [];
-    db.certificates = certificates || [];
-    db.paymentSettings = paymentSettings || {};
-}
 
 /* ── Modal ─────────────────────────────────────────────────────────────────── */
 function openAdminModal()  { document.getElementById('adminModal').classList.add('active'); }
