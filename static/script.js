@@ -35,23 +35,24 @@ async function apiFetch(path, method = 'GET', body = null) {
 }
 
 async function loadPublic() {
+    const safe = (p) => p.catch(() => null);
     const [events, schedules, notices, brochures, moments, certificates, paymentSettings] =
         await Promise.all([
-            apiFetch('/api/events'),
-            apiFetch('/api/schedules'),
-            apiFetch('/api/notices'),
-            apiFetch('/api/brochures'),
-            apiFetch('/api/moments'),
-            apiFetch('/api/certificates'),
-            apiFetch('/api/payment-settings'),
+            safe(apiFetch('/api/events')),
+            safe(apiFetch('/api/schedules')),
+            safe(apiFetch('/api/notices')),
+            safe(apiFetch('/api/brochures')),
+            safe(apiFetch('/api/moments')),
+            safe(apiFetch('/api/certificates')),
+            safe(apiFetch('/api/payment-settings')),
         ]);
-    db.events = events;
-    db.schedules = schedules;
-    db.notices = notices;
-    db.brochures = brochures;
-    db.moments = moments;
-    db.certificates = certificates;
-    db.paymentSettings = paymentSettings;
+    db.events = events || [];
+    db.schedules = schedules || [];
+    db.notices = notices || [];
+    db.brochures = brochures || [];
+    db.moments = moments || [];
+    db.certificates = certificates || [];
+    db.paymentSettings = paymentSettings || {};
 }
 
 /* ── Modal ─────────────────────────────────────────────────────────────────── */
