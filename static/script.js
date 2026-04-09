@@ -28,28 +28,18 @@ async function apiFetch(path, method = 'GET', body = null) {
     return res.json();
 }
 
-async function loadAll() {
-    const [events, schedules, registrations, notices, feedbacks, brochures, moments, certificates, paymentSettings] =
-        await Promise.all([
-            apiFetch('/api/events'),
-            apiFetch('/api/schedules'),
-            apiFetch('/api/registrations'),
-            apiFetch('/api/notices'),
-            apiFetch('/api/feedbacks'),
-            apiFetch('/api/brochures'),
-            apiFetch('/api/moments'),
-            apiFetch('/api/certificates'),
-            apiFetch('/api/payment-settings'),
-        ]);
-    db.events = events;
-    db.schedules = schedules;
-    db.registrations = registrations;
-    db.notices = notices;
-    db.feedbacks = feedbacks;
-    db.brochures = brochures;
-    db.moments = moments;
-    db.certificates = certificates;
-    db.paymentSettings = paymentSettings;
+async function apiFetch(path, method = 'GET', body = null) {
+    const opts = { 
+        method, 
+        headers: { 
+            'Content-Type': 'application/json',
+            'ngrok-skip-browser-warning': 'true'
+        } 
+    };
+    if (body !== null) opts.body = JSON.stringify(body);
+    const res = await fetch(API + path, opts);
+    if (!res.ok) throw new Error(`API error ${res.status}`);
+    return res.json();
 }
 
 async function loadPublic() {
