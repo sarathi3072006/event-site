@@ -69,7 +69,11 @@ window.onclick = e => {
 async function enterAsGuest() {
     isAdmin = false;
     showLoadingOverlay('Loading data...');
-    await loadPublic();
+    try {
+        await loadPublic();
+    } catch (err) {
+        console.error('Load error:', err);
+    }
     hideLoadingOverlay();
     document.getElementById('landingPage').classList.remove('active');
     document.getElementById('appPage').classList.add('active');
