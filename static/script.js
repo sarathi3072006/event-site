@@ -21,14 +21,6 @@ let currentPrintCertId = null;
 
 /* ── API helpers ─────────────────────────────────────────────────────────── */
 async function apiFetch(path, method = 'GET', body = null) {
-    const opts = { method, headers: { 'Content-Type': 'application/json' } };
-    if (body !== null) opts.body = JSON.stringify(body);
-    const res = await fetch(API + path, opts);
-    if (!res.ok) throw new Error(`API error ${res.status}`);
-    return res.json();
-}
-
-async function apiFetch(path, method = 'GET', body = null) {
     const opts = { 
         method, 
         headers: { 
