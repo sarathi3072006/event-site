@@ -35,17 +35,14 @@ async function apiFetch(path, method = 'GET', body = null) {
 }
 
 async function loadPublic() {
-    const safe = (p) => p.catch(() => null);
-    const [events, schedules, notices, brochures, moments, certificates, paymentSettings] =
-        await Promise.all([
-            safe(apiFetch('/api/events')),
-            safe(apiFetch('/api/schedules')),
-            safe(apiFetch('/api/notices')),
-            safe(apiFetch('/api/brochures')),
-            safe(apiFetch('/api/moments')),
-            safe(apiFetch('/api/certificates')),
-            safe(apiFetch('/api/payment-settings')),
-        ]);
+    db.events = await apiFetch('/api/events').catch(() => []);
+    db.schedules = await apiFetch('/api/schedules').catch(() => []);
+    db.notices = await apiFetch('/api/notices').catch(() => []);
+    db.brochures = await apiFetch('/api/brochures').catch(() => []);
+    db.moments = await apiFetch('/api/moments').catch(() => []);
+    db.certificates = await apiFetch('/api/certificates').catch(() => []);
+    db.paymentSettings = await apiFetch('/api/payment-settings').catch(() => ({}));
+}
     db.events = events || [];
     db.schedules = schedules || [];
     db.notices = notices || [];
